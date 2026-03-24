@@ -1,0 +1,12 @@
+.git
+.gitignore
+**/target
+**/.idea
+**/.vscode
+**/*.iml
+**/*.log
+**/node_modules
+**/.DS_Store
+assets
+.cursor
+agent-transcripts

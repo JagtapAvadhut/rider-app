@@ -1,0 +1,732 @@
+==================================================
+SERVICE: api-gateway
+==================================================
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: API gateway health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "api-gateway",
+  "status": "UP"
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "exception message",
+  "path": "/internal/health"
+}
+
+CURL:
+curl -X GET http://localhost:8080/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: auth-service
+==================================================
+
+API: POST /auth/register
+METHOD: POST
+DESCRIPTION: Register a user and return JWT token.
+
+REQUEST:
+{
+  "fullName": "John Rider",
+  "email": "john@example.com",
+  "password": "Pass@123",
+  "role": "RIDER"
+}
+
+RESPONSE:
+{
+  "accessToken": "jwt-token",
+  "tokenType": "Bearer"
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 400,
+  "error": "BAD_REQUEST",
+  "message": "Email already exists",
+  "path": "/auth/register"
+}
+
+CURL:
+curl -X POST http://localhost:8081/auth/register \
+-H "Content-Type: application/json" \
+-d "{\"fullName\":\"John Rider\",\"email\":\"john@example.com\",\"password\":\"Pass@123\",\"role\":\"RIDER\"}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: POST /auth/login
+METHOD: POST
+DESCRIPTION: Login and return JWT token.
+
+REQUEST:
+{
+  "email": "john@example.com",
+  "password": "Pass@123"
+}
+
+RESPONSE:
+{
+  "accessToken": "jwt-token",
+  "tokenType": "Bearer"
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 400,
+  "error": "BAD_REQUEST",
+  "message": "Invalid credentials",
+  "path": "/auth/login"
+}
+
+CURL:
+curl -X POST http://localhost:8081/auth/login \
+-H "Content-Type: application/json" \
+-d "{\"email\":\"john@example.com\",\"password\":\"Pass@123\"}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Auth service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "auth-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8081/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: user-service
+==================================================
+
+API: GET /users
+METHOD: GET
+DESCRIPTION: Fetch all user profiles.
+
+REQUEST:
+{}
+
+RESPONSE:
+[
+  {
+    "id": 1,
+    "email": "test@gmail.com",
+    "fullName": "Avadhoot",
+    "phone": "9999999999"
+  }
+]
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "exception message",
+  "path": "/users"
+}
+
+CURL:
+curl -X GET http://localhost:8082/users
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: User service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "user-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8082/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: driver-service
+==================================================
+
+API: POST /drivers/location
+METHOD: POST
+DESCRIPTION: Update driver geo-location and availability status.
+
+REQUEST:
+{
+  "driverId": 101,
+  "lat": 18.5204,
+  "lon": 73.8567,
+  "available": true
+}
+
+RESPONSE:
+{}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 400,
+  "error": "BAD_REQUEST",
+  "message": "Validation failed",
+  "path": "/drivers/location"
+}
+
+CURL:
+curl -X POST http://localhost:8083/drivers/location \
+-H "Content-Type: application/json" \
+-d "{\"driverId\":101,\"lat\":18.5204,\"lon\":73.8567,\"available\":true}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Driver service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "driver-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8083/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: ride-service
+==================================================
+
+API: POST /rides/request
+METHOD: POST
+DESCRIPTION: Create a new ride request.
+
+REQUEST:
+{
+  "riderId": 1001,
+  "pickupLat": 18.5204,
+  "pickupLon": 73.8567,
+  "dropLat": 18.5314,
+  "dropLon": 73.8446
+}
+
+RESPONSE:
+{
+  "id": 1,
+  "riderId": 1001,
+  "driverId": null,
+  "pickupLat": 18.5204,
+  "pickupLon": 73.8567,
+  "dropLat": 18.5314,
+  "dropLon": 73.8446,
+  "status": "REQUESTED",
+  "fare": null
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 400,
+  "error": "BAD_REQUEST",
+  "message": "Validation failed",
+  "path": "/rides/request"
+}
+
+CURL:
+curl -X POST http://localhost:8084/rides/request \
+-H "Content-Type: application/json" \
+-d "{\"riderId\":1001,\"pickupLat\":18.5204,\"pickupLon\":73.8567,\"dropLat\":18.5314,\"dropLon\":73.8446}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: POST /rides/{rideId}/accept
+METHOD: POST
+DESCRIPTION: Assign driver and mark ride as ACCEPTED.
+
+REQUEST:
+{
+  "driverId": 501
+}
+
+RESPONSE:
+{
+  "id": 1,
+  "riderId": 1001,
+  "driverId": 501,
+  "pickupLat": 18.5204,
+  "pickupLon": 73.8567,
+  "dropLat": 18.5314,
+  "dropLon": 73.8446,
+  "status": "ACCEPTED",
+  "fare": null
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "No value present",
+  "path": "/rides/1/accept"
+}
+
+CURL:
+curl -X POST http://localhost:8084/rides/1/accept \
+-H "Content-Type: application/json" \
+-d "{\"driverId\":501}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: POST /rides/{rideId}/start
+METHOD: POST
+DESCRIPTION: Mark ride as STARTED.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "id": 1,
+  "riderId": 1001,
+  "driverId": 501,
+  "pickupLat": 18.5204,
+  "pickupLon": 73.8567,
+  "dropLat": 18.5314,
+  "dropLon": 73.8446,
+  "status": "STARTED",
+  "fare": null
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "No value present",
+  "path": "/rides/1/start"
+}
+
+CURL:
+curl -X POST http://localhost:8084/rides/1/start
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: POST /rides/{rideId}/complete
+METHOD: POST
+DESCRIPTION: Mark ride as COMPLETED and store fare.
+
+REQUEST:
+{
+  "fare": 245.75
+}
+
+RESPONSE:
+{
+  "id": 1,
+  "riderId": 1001,
+  "driverId": 501,
+  "pickupLat": 18.5204,
+  "pickupLon": 73.8567,
+  "dropLat": 18.5314,
+  "dropLon": 73.8446,
+  "status": "COMPLETED",
+  "fare": 245.75
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "No value present",
+  "path": "/rides/1/complete"
+}
+
+CURL:
+curl -X POST http://localhost:8084/rides/1/complete \
+-H "Content-Type: application/json" \
+-d "{\"fare\":245.75}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Ride service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "ride-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8084/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: matching-service
+==================================================
+
+API: POST /matching/nearest
+METHOD: POST
+DESCRIPTION: Find nearest available driver from Redis geo data.
+
+REQUEST:
+{
+  "lat": 18.5204,
+  "lon": 73.8567,
+  "radiusKm": 5.0
+}
+
+RESPONSE:
+{
+  "driverId": 501,
+  "message": "MATCHED"
+}
+
+ALTERNATE_RESPONSE:
+{
+  "driverId": null,
+  "message": "NO_DRIVER_AVAILABLE"
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "exception message",
+  "path": "/matching/nearest"
+}
+
+CURL:
+curl -X POST http://localhost:8085/matching/nearest \
+-H "Content-Type: application/json" \
+-d "{\"lat\":18.5204,\"lon\":73.8567,\"radiusKm\":5.0}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Matching service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "matching-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8085/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: pricing-service
+==================================================
+
+API: POST /pricing/calculate
+METHOD: POST
+DESCRIPTION: Calculate ride fare using base + distance + waiting + surge - discount.
+
+REQUEST:
+{
+  "km": 12.5,
+  "surgeMultiplier": 1.3,
+  "waitingCharge": 20.0,
+  "discount": 10.0
+}
+
+RESPONSE:
+{
+  "fare": 251.00
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "exception message",
+  "path": "/pricing/calculate"
+}
+
+CURL:
+curl -X POST http://localhost:8086/pricing/calculate \
+-H "Content-Type: application/json" \
+-d "{\"km\":12.5,\"surgeMultiplier\":1.3,\"waitingCharge\":20.0,\"discount\":10.0}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Pricing service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "pricing-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8086/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: payment-service
+==================================================
+
+API: POST /payments/process
+METHOD: POST
+DESCRIPTION: Process payment and persist payment record.
+
+REQUEST:
+{
+  "rideId": 1,
+  "amount": 245.75
+}
+
+RESPONSE:
+{
+  "id": 1001,
+  "rideId": 1,
+  "amount": 245.75,
+  "status": "SUCCEEDED"
+}
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 400,
+  "error": "BAD_REQUEST",
+  "message": "Validation failed",
+  "path": "/payments/process"
+}
+
+CURL:
+curl -X POST http://localhost:8087/payments/process \
+-H "Content-Type: application/json" \
+-d "{\"rideId\":1,\"amount\":245.75}"
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Payment service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "payment-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8087/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: tracking-service
+==================================================
+
+API: GET /tracking/subscribe
+METHOD: GET
+DESCRIPTION: Returns WebSocket subscribe and publish guide.
+
+REQUEST:
+{}
+
+RESPONSE:
+"Subscribe topics: /topic/ride/{rideId}/location and /topic/ride/{rideId}/status. Send to /app/driver/location/{rideId} or /app/ride/status/{rideId}."
+
+ERROR_RESPONSE:
+{
+  "timestamp": "2026-03-27T11:35:00Z",
+  "status": 500,
+  "error": "INTERNAL_SERVER_ERROR",
+  "message": "exception message",
+  "path": "/tracking/subscribe"
+}
+
+CURL:
+curl -X GET http://localhost:8088/tracking/subscribe
+
+TEST_RESULT:
+- Runtime test blocked (service endpoint timed out via localhost probe).
+
+--------------------------------------------------
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Tracking service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "tracking-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8088/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+==================================================
+SERVICE: notification-service
+==================================================
+
+API: GET /internal/health
+METHOD: GET
+DESCRIPTION: Notification service health check endpoint.
+
+REQUEST:
+{}
+
+RESPONSE:
+{
+  "service": "notification-service",
+  "status": "UP"
+}
+
+CURL:
+curl -X GET http://localhost:8089/internal/health
+
+TEST_RESULT:
+- Attempt 1: timeout
+- Attempt 2: timeout
+- Attempt 3: timeout
+
+--------------------------------------------------
+
+FINAL_VALIDATION:
+1. All listed services are covered.
+2. All controller APIs (GET, POST, PUT, DELETE) are included.
+3. PUT and DELETE endpoints are not present in current codebase.
+4. Request fields are mapped from real DTO/Map bodies.
+5. Response fields are mapped from real return DTO/entity/string structures.
+6. Local runtime health probes were executed 3 times for each service port and timed out in this environment.
